@@ -12,9 +12,11 @@ interface TicketRowProps {
   ticket: Ticket
   assignee: User | undefined
   isOpen: boolean
+  isSelected: boolean
+  onToggle: () => void
 }
 
-export function TicketRow({ ticket, assignee, isOpen }: TicketRowProps) {
+export function TicketRow({ ticket, assignee, isOpen, isSelected, onToggle }: TicketRowProps) {
   const navigate = useNavigate()
   const { search } = useLocation()
   const target = { pathname: `/tickets/${ticket.id}`, search }
@@ -27,10 +29,19 @@ export function TicketRow({ ticket, assignee, isOpen }: TicketRowProps) {
   return (
     <tr
       onClick={handleClick}
-      className={`cursor-pointer ${isOpen ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
+      className={`cursor-pointer ${isOpen || isSelected ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
       aria-current={isOpen || undefined}
     >
-      <td className="whitespace-nowrap py-2.5 pl-4 pr-3">
+      <td className="py-2.5 pl-4" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          aria-label={`Select ${ticket.id}`}
+          checked={isSelected}
+          onChange={onToggle}
+          className="size-4 rounded border-slate-300 accent-brand-600"
+        />
+      </td>
+      <td className="whitespace-nowrap px-3 py-2.5">
         <span className="flex items-center gap-2">
           <TypeIcon type={ticket.type} />
           <Link to={target} className="font-medium text-slate-500 hover:text-brand-600 hover:underline">

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Outlet } from 'react-router'
 import { useTickets } from '../../api/tickets'
 import { Spinner } from '../../components/Spinner'
@@ -9,6 +10,23 @@ import { useTicketFilters } from './useTicketFilters'
 export function TicketListPage() {
   const { filters, hasFilters, setFilter, setPage, clearFilters } = useTicketFilters()
   const { data, isPending, isError, error, isFetching } = useTickets(filters)
+  const [selectedRows, setSelectedRows] = useState<number[]>([])
+
+  const toggleRow = (index: number) => {
+    if (selectedRows.includes(index)) {
+      setSelectedRows(selectedRows.filter((i) => i !== index))
+    } else {
+      setSelectedRows([...selectedRows, index])
+    }
+  }
+
+  const toggleAll = () => {
+    if (selectedRows.length > 0) {
+      setSelectedRows([])
+    } else {
+      setSelectedRows(data!.items.map((_, i) => i))
+    }
+  }
 
   return (
     <>
@@ -29,7 +47,12 @@ export function TicketListPage() {
             <p className="px-4 py-16 text-center text-sm text-red-600">Could not load tickets: {error.message}</p>
           ) : (
             <>
-              <TicketTable tickets={data.items} />
+              <TicketTable
+                tickets={data.items}
+                selectedRows={selectedRows}
+                onToggleRow={toggleRow}
+                onToggleAll={toggleAll}
+              />
               <Pagination page={data.page} pageSize={data.pageSize} total={data.total} onPageChange={setPage} />
             </>
           )}
