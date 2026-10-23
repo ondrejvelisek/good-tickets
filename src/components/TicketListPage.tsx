@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { Outlet, useSearchParams } from 'react-router'
 import { toSearchParams, useTickets, type TicketFilters } from '../api'
 import { BulkToolbar } from './BulkToolbar'
@@ -9,7 +10,14 @@ import { TicketTable } from './TicketTable'
 export function TicketListPage() {
   const { filters, setFilter } = useTicketFilters()
   const { data, isPending, isError } = useTickets(filters)
+  const queryClient = useQueryClient()
   const [selectedRows, setSelectedRows] = useState<number[]>([])
+
+  // reset selection and reload tickets when filters change
+  useEffect(() => {
+    setSelectedRows([])
+    queryClient.resetQueries({ queryKey: ['tickets'] })
+  }, [filters.status, filters.assignee, queryClient])
 
   const toggleRow = (index: number) => {
     if (selectedRows.includes(index)) {
