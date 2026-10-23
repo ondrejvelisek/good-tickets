@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router'
 import { useTickets } from '../../api/tickets'
 import { Spinner } from '../../components/Spinner'
+import { BulkToolbar } from '../bulk-edit/BulkToolbar'
 import { FiltersBar } from './FiltersBar'
 import { Pagination } from './Pagination'
 import { TicketTable } from './TicketTable'
@@ -47,6 +48,11 @@ export function TicketListPage() {
             <p className="px-4 py-16 text-center text-sm text-red-600">Could not load tickets: {error.message}</p>
           ) : (
             <>
+              <BulkToolbar
+                tickets={data.items}
+                selectedRows={selectedRows}
+                onClearSelection={() => setSelectedRows([])}
+              />
               <TicketTable
                 tickets={data.items}
                 selectedRows={selectedRows}
