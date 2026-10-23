@@ -37,6 +37,16 @@ export function BulkToolbar({ tickets, selectedRows, onClearSelection }: BulkToo
     setSelectedCount(selectedRows.length)
   }, [selectedRows])
 
+  // Esc to cancel selection (same as Jira)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClearSelection()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+  }, [onClearSelection])
+
   const selectedTickets = selectedRows.map((index) => tickets[index])
 
   const handleConfirmStatus = () => {
