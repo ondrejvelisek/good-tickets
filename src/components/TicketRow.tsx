@@ -2,11 +2,21 @@ import { Link, useLocation } from 'react-router'
 import type { Ticket, User } from '../api'
 import { StatusBadge } from './StatusBadge'
 
-export function TicketRow({ ticket, assignee }: { ticket: Ticket; assignee: User | undefined }) {
+interface TicketRowProps {
+  ticket: Ticket
+  assignee: User | undefined
+  isSelected: boolean
+  onToggle: () => void
+}
+
+export function TicketRow({ ticket, assignee, isSelected, onToggle }: TicketRowProps) {
   const { search } = useLocation()
 
   return (
     <tr className="hover:bg-slate-50">
+      <td className="px-3 py-2">
+        <input type="checkbox" checked={isSelected} onChange={onToggle} />
+      </td>
       <td className="whitespace-nowrap px-3 py-2 text-slate-500">{ticket.id}</td>
       <td className="px-3 py-2">
         <Link to={{ pathname: `/tickets/${ticket.id}`, search }} className="font-medium hover:text-blue-600">
