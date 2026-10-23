@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { Outlet, useSearchParams } from 'react-router'
 import { toSearchParams, useTickets, type TicketFilters } from '../api'
+import { BulkToolbar } from './BulkToolbar'
 import { FiltersBar } from './FiltersBar'
 import { QuickSearch } from './QuickSearch'
 import { TicketTable } from './TicketTable'
@@ -8,6 +10,22 @@ import { TicketTable } from './TicketTable'
 export function TicketListPage() {
   const { filters, setFilter } = useTicketFilters()
   const { data, isPending, isError } = useTickets(filters)
+  const queryClient = useQueryClient()
+  const [selectedRows, setSelectedRows] = useState<number[]>([])
+
+  // reset selection and reload tickets when filters change
+  useEffect(() => {
+    setSelectedRows([])
+    queryClient.resetQueries({ queryKey: ['tickets'] })
+  }, [filters.status, filters.assignee, queryClient])
+
+  const toggleRow = (index: number) => {
+    if (selectedRows.includes(index)) {
+      setSelectedRows(selectedRows.filter((i) => i !== index))
+    } else {
+      setSelectedRows([...selectedRows, index])
+    }
+  }
 
   return (
     <div className="grid grid-cols-3">
@@ -18,13 +36,15 @@ export function TicketListPage() {
           <QuickSearch />
         </div>
 
+        <BulkToolbar tickets={data ?? []} selectedRows={selectedRows} onClearSelection={() => setSelectedRows([])} />
+
         <div className="mt-4 rounded-lg border border-slate-200 bg-white">
           {isPending ? (
             <p className="p-8 text-center text-slate-500">Loading…</p>
           ) : isError ? (
             <p className="p-8 text-center text-red-600">Could not load tickets.</p>
           ) : (
-            <TicketTable tickets={data} />
+            <TicketTable tickets={data} selectedRows={selectedRows} onToggleRow={toggleRow} />
           )}
         </div>
       </main>
