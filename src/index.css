@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+/* Customizable select, so options can contain markup (StatusBadge). */
+select,
+::picker(select) {
+  appearance: base-select;
+}
+
+select {
+  @apply flex items-center;
+}
+
+::picker(select) {
+  @apply mt-1 rounded-md border border-slate-200 bg-white py-1 shadow-lg;
+}
+
+option {
+  @apply px-3 py-1.5;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+}
