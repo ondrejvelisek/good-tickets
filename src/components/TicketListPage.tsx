@@ -8,6 +8,15 @@ import { TicketTable } from './TicketTable'
 export function TicketListPage() {
   const { filters, setFilter } = useTicketFilters()
   const { data, isPending, isError } = useTickets(filters)
+  const [selectedRows, setSelectedRows] = useState<number[]>([])
+
+  const toggleRow = (index: number) => {
+    if (selectedRows.includes(index)) {
+      setSelectedRows(selectedRows.filter((i) => i !== index))
+    } else {
+      setSelectedRows([...selectedRows, index])
+    }
+  }
 
   return (
     <div className="grid grid-cols-3">
@@ -24,7 +33,7 @@ export function TicketListPage() {
           ) : isError ? (
             <p className="p-8 text-center text-red-600">Could not load tickets.</p>
           ) : (
-            <TicketTable tickets={data} />
+            <TicketTable tickets={data} selectedRows={selectedRows} onToggleRow={toggleRow} />
           )}
         </div>
       </main>
