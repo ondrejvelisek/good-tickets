@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet, useSearchParams } from 'react-router'
 import { toSearchParams, useTickets, type TicketFilters } from '../api'
+import { BulkToolbar } from './BulkToolbar'
 import { FiltersBar } from './FiltersBar'
 import { QuickSearch } from './QuickSearch'
 import { TicketTable } from './TicketTable'
@@ -26,6 +27,8 @@ export function TicketListPage() {
           <FiltersBar filters={filters} onChange={setFilter} />
           <QuickSearch />
         </div>
+
+        <BulkToolbar tickets={data ?? []} selectedRows={selectedRows} onClearSelection={() => setSelectedRows([])} />
 
         <div className="mt-4 rounded-lg border border-slate-200 bg-white">
           {isPending ? (
