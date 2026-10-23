@@ -31,6 +31,13 @@ export function BulkToolbar({ tickets, selectedRows, onClearSelection }: BulkToo
     setSelectedCount(selectedRows.length)
   }, [selectedRows])
 
+  // Esc to cancel selection (same as Jira)
+  useEffect(() => {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') onClearSelection()
+    })
+  }, [onClearSelection])
+
   const selectedTickets = selectedRows.map((index) => tickets[index])
   const totalEstimate = selectedTickets.reduce((sum, ticket) => sum + (ticket.estimateMinutes || 0), 0)
 
